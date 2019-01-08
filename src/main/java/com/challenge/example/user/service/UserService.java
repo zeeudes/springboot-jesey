@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -57,7 +56,7 @@ public class UserService {
         final Login login = new Login(userRegistered.getEmail(), password);
 
         final Response response =
-                client.target(this.uriBase.concat(Optional.ofNullable(this.port).orElse("")))
+                client.target(this.uriBase.concat(this.port))
                         .path("/signin").request().post(Entity.entity(login, MediaType.APPLICATION_JSON));
 
         return response.readEntity(AuthToken.class);
