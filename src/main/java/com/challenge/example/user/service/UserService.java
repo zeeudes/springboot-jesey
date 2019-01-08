@@ -3,40 +3,38 @@ package com.challenge.example.user.service;
 import com.challenge.example.config.security.api.domain.AuthToken;
 import com.challenge.example.config.security.api.domain.Login;
 import com.challenge.example.config.security.enums.Role;
+import com.challenge.example.config.security.service.impl.AuthTokenService;
 import com.challenge.example.user.api.dto.UserDTO;
 import com.challenge.example.user.entity.User;
 import com.challenge.example.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    @Value("${server.port}")
-    private String port;
-    @Value("${app.uri.base}")
-    private String uriBase;
-
     private PasswordEncoder passwordEncoder;
     private UserRepository repository;
-    private Client client;
+    private AuthTokenService tokenService;
+    private AuthenticationManager authManager;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       AuthTokenService tokenService, AuthenticationManager authManager) {
         this.repository = userRepository;
-        this.client = ClientBuilder.newClient();
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
+        this.authManager = authManager;
     }
 
     public AuthToken save(UserDTO dto){
@@ -55,11 +53,24 @@ public class UserService {
         final User userRegistered = repository.saveAndFlush(user);
         final Login login = new Login(userRegistered.getEmail(), password);
 
-        final Response response =
-                client.target(this.uriBase.concat(this.port))
-                        .path("/signin").request().post(Entity.entity(login, MediaType.APPLICATION_JSON));
+        final Authentication toBeAuth =
+                new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
+        final Authentication auth = this.authManager.authenticate(toBeAuth);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        return response.readEntity(AuthToken.class);
+        final String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        final Set<Role> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(grantedAuthority -> Role.valueOf(grantedAuthority.toString()))
+                .collect(Collectors.toSet());
+
+        final String token = this.tokenService.getToken(username, authorities);
+        final AuthToken authToken = new AuthToken();
+        authToken.setToken(token);
+
+        registerLoginTime(userRegistered);
+
+
+        return authToken;
     }
 
     public User findByEmail(String email) {
