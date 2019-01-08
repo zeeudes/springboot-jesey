@@ -18,13 +18,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class UserService {
 
     @Value("${server.port}")
-    private Integer port;
+    private String port;
     @Value("${app.uri.base}")
     private String uriBase;
 
@@ -41,6 +42,7 @@ public class UserService {
 
     public AuthToken save(UserDTO dto){
         final User user = UserDTO.toUser(dto);
+        final String password = user.getPassword();
 
         final Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
@@ -52,10 +54,11 @@ public class UserService {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
 
         final User userRegistered = repository.saveAndFlush(user);
-        final Login login = new Login(userRegistered.getEmail(), "hunter2");
+        final Login login = new Login(userRegistered.getEmail(), password);
 
-        final Response response = client.target(this.uriBase.concat(this.port.toString())).path("/signin").request()
-                .post(Entity.entity(login, MediaType.APPLICATION_JSON));
+        final Response response =
+                client.target(this.uriBase.concat(Optional.ofNullable(this.port).orElse("")))
+                        .path("/signin").request().post(Entity.entity(login, MediaType.APPLICATION_JSON));
 
         return response.readEntity(AuthToken.class);
     }
