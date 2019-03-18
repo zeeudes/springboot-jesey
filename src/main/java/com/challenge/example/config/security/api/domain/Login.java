@@ -10,8 +10,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Login {
+
     @NotNull(message = "Missing fields")
     private String email;
+
     @NotNull(message = "Missing fields")
     private String password;
 }

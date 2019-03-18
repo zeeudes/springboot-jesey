@@ -16,7 +16,7 @@ public class APIException extends WebApplicationException {
     @Setter
     private String message;
 
-    public APIException(Status status, String message) {
+    public APIException(final Status status, final String message) {
         super(Response.status(status.getStatusCode())
                 .entity(new MessageError(message, status.getStatusCode()))
                 .type(MediaType.APPLICATION_JSON_TYPE).build()

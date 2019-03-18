@@ -17,11 +17,11 @@ public class AuthTokenRefresExceptionMapper implements ExceptionMapper<AuthToken
     private UriInfo uriInfo;
 
     @Override
-    public Response toResponse(AuthTokenRefreshException exception) {
+    public Response toResponse(final AuthTokenRefreshException exception) {
 
-        Status status = Status.FORBIDDEN;
+        final Status status = Status.FORBIDDEN;
 
-        MessageError error = new MessageError();
+        final MessageError error = new MessageError();
         error.setErrorCode(status.getStatusCode());
         error.setMessage("The authentication token cannot be refreshed.");
 

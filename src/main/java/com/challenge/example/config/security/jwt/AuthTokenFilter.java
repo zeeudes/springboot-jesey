@@ -22,15 +22,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final AuthenticationEntryPoint authEntryPoint;
 
     @Autowired
-    public AuthTokenFilter(AuthenticationManager manager,
-                           AuthenticationEntryPoint authEntryPoint) {
+    public AuthTokenFilter(final AuthenticationManager manager,
+                           final AuthenticationEntryPoint authEntryPoint) {
         this.manager = manager;
         this.authEntryPoint = authEntryPoint;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
-                                    FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest req, final HttpServletResponse res,
+                                    final FilterChain chain) throws ServletException, IOException {
 
         final String authTokenHeader = req.getHeader(HttpHeaders.AUTHORIZATION);
         if (authTokenHeader != null && authTokenHeader.startsWith("Bearer ")) {
@@ -41,7 +41,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 final Authentication auth = new JwtAuthToken(authToken);
                 final Authentication authenticated = manager.authenticate(auth);
 
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                final SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authenticated);
                 SecurityContextHolder.setContext(context);
 

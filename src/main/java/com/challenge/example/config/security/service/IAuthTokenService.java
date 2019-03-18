@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface IAuthTokenService {
 
-    String getToken(String username, Set<Role> authorities);
+    String getToken(final String username, final Set<Role> authorities);
 
-    AuthTokenInfo parseToken(String token);
+    AuthTokenInfo parseToken(final String token);
 
-    String refreshAuthToken(AuthTokenInfo currentAuthTokenInfo);
+    String refreshAuthToken(final AuthTokenInfo currentAuthTokenInfo);
 }

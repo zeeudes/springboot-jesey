@@ -18,11 +18,11 @@ public class AuthExceptionMapper implements ExceptionMapper<AuthenticationExcept
     private UriInfo info;
 
     @Override
-    public Response toResponse(AuthenticationException exception) {
+    public Response toResponse(final AuthenticationException exception) {
 
-        Status status = Status.FORBIDDEN;
+        final Status status = Status.FORBIDDEN;
 
-        MessageError error = new MessageError();
+        final MessageError error = new MessageError();
         error.setErrorCode(status.getStatusCode());
         error.setMessage(exception.getMessage());
 

@@ -1,8 +1,8 @@
 package com.challenge.example.config;
 
 import com.challenge.example.config.security.jwt.AuthProvider;
-import com.challenge.example.config.security.jwt.EntryPoint;
 import com.challenge.example.config.security.jwt.AuthTokenFilter;
+import com.challenge.example.config.security.jwt.EntryPoint;
 import com.challenge.example.config.security.service.impl.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,14 +25,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailService userDetailsService;
-    private AuthProvider AuthProvider;
-    private EntryPoint authenticationEntryPoint;
+    private final UserDetailService userDetailsService;
+    private final AuthProvider AuthProvider;
+    private final EntryPoint authenticationEntryPoint;
 
     @Autowired
-    public WebSecurityConfig(@Lazy UserDetailService userDetailsService,
-                             @Lazy AuthProvider AuthProvider,
-                             EntryPoint authenticationEntryPoint) {
+    public WebSecurityConfig(@Lazy final UserDetailService userDetailsService,
+                             @Lazy final AuthProvider AuthProvider,
+                             final EntryPoint authenticationEntryPoint) {
 
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.AuthProvider = AuthProvider;
@@ -56,13 +56,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(AuthProvider);
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
 
         http.csrf().disable()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)

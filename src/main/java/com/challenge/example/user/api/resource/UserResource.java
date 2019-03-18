@@ -21,10 +21,10 @@ import java.util.Objects;
 @RestController
 public class UserResource {
 
-    private UserService service;
+    private final UserService service;
 
     @Autowired
-    public UserResource(UserService userService) {
+    public UserResource(final UserService userService) {
         this.service = userService;
     }
 
@@ -32,7 +32,7 @@ public class UserResource {
     @Path("/signup")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response signup(@Valid @NotNull(message = "Missing Fields") UserDTO user) {
+    public Response signup(@Valid @NotNull(message = "Missing Fields") final UserDTO user) {
 
         if(Objects.nonNull(service.findByEmail(user.getEmail()))) {
             throw new APIException(Response.Status.BAD_REQUEST, "E-mail already exists");
@@ -47,11 +47,12 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMe() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = service.findByEmail(auth.getName());
-        UserDTO userDTO = UserDTO.toUserDTO(user);
+        final User user = service.findByEmail(auth.getName());
+        final UserDTO userDTO = UserDTO.toUserDTO(user);
         userDTO.setPassword(null);
+
         return Response.ok(userDTO).build();
     }
 }

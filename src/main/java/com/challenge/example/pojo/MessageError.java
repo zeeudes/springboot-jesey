@@ -1,12 +1,12 @@
 package com.challenge.example.pojo;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 public class MessageError {
     private String message;
     private Integer errorCode;

@@ -23,21 +23,21 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private PasswordEncoder passwordEncoder;
-    private UserRepository repository;
-    private AuthTokenService tokenService;
-    private AuthenticationManager authManager;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
+    private final AuthTokenService tokenService;
+    private final AuthenticationManager authManager;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       AuthTokenService tokenService, AuthenticationManager authManager) {
+    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder,
+                       final AuthTokenService tokenService, final AuthenticationManager authManager) {
         this.repository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.authManager = authManager;
     }
 
-    public AuthToken save(UserDTO dto){
+    public AuthToken save(final UserDTO dto){
         final User user = UserDTO.toUser(dto);
         final String password = user.getPassword();
 
@@ -53,8 +53,25 @@ public class UserService {
         final User userRegistered = repository.saveAndFlush(user);
         final Login login = new Login(userRegistered.getEmail(), password);
 
+        registerLoginTime(userRegistered);
+
+        return generateAuthToken(login);
+    }
+
+    public User findByEmail(final String email) {
+        return repository.findByEmail(email);
+    }
+
+    public void registerLoginTime(final User user) {
+        user.setLastLogin(ZonedDateTime.now());
+        this.repository.saveAndFlush(user);
+    }
+
+    public AuthToken generateAuthToken(final Login login) {
+
         final Authentication toBeAuth =
                 new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
+
         final Authentication auth = this.authManager.authenticate(toBeAuth);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -67,18 +84,6 @@ public class UserService {
         final AuthToken authToken = new AuthToken();
         authToken.setToken(token);
 
-        registerLoginTime(userRegistered);
-
-
         return authToken;
-    }
-
-    public User findByEmail(String email) {
-        return repository.findByEmail(email);
-    }
-
-    public void registerLoginTime(User user) {
-        user.setLastLogin(ZonedDateTime.now());
-        this.repository.saveAndFlush(user);
     }
 }

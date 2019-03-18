@@ -19,8 +19,8 @@ public class ConstraintExceptionMapper implements ExceptionMapper<ConstraintViol
                        .build();
     }
 
-    private MessageError prepareMessage(ConstraintViolationException exception) {
-        String error = exception.getConstraintViolations().stream().findFirst().get().getMessage();
+    private MessageError prepareMessage(final ConstraintViolationException exception) {
+        final String error = exception.getConstraintViolations().stream().findFirst().get().getMessage();
         return new MessageError(error, Response.Status.BAD_REQUEST.getStatusCode());
     }
 }

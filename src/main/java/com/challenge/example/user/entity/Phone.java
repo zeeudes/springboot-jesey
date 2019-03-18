@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Phone implements Serializable {
-    Integer number;
-    Integer areaCode;
-    String countryCode;
+    private Integer number;
+    private Integer areaCode;
+    private String countryCode;
 }

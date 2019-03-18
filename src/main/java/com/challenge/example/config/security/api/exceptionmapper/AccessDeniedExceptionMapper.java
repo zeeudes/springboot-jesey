@@ -18,11 +18,11 @@ public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDenied
     private UriInfo info;
 
     @Override
-    public Response toResponse(AccessDeniedException exception) {
+    public Response toResponse(final AccessDeniedException exception) {
 
-        Status status = Status.FORBIDDEN;
+        final Status status = Status.FORBIDDEN;
 
-        MessageError error = new MessageError();
+        final MessageError error = new MessageError();
         error.setErrorCode(status.getStatusCode());
         error.setMessage("You don't have enough permissions to perform this action");
 

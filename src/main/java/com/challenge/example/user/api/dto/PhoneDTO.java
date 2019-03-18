@@ -19,14 +19,16 @@ import java.util.stream.Collectors;
 public class PhoneDTO implements Serializable {
 
     @NotNull(message = "Missing fields")
-    Integer number;
+    private Integer number;
+
     @NotNull(message = "Missing fields")
     @JsonProperty(value = "area_code")
-    Integer areaCode;
+    private Integer areaCode;
+
     @NotBlank(message = "Invalid fields")
     @NotNull(message = "Missing fields")
     @JsonProperty(value = "country_code")
-    String countryCode;
+    private String countryCode;
 
     public static Set<PhoneDTO> toPhoneDTOSet(Set<Phone> phones) {
         Gson gson = new Gson();
